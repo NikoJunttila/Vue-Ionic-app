@@ -22,7 +22,7 @@
     </div>
   </IonContent>
   <Modal :isOpen="isOpen" @some-event="modalClose">
-    <div class="flex-col items-center-flex ">
+    <div v-if="singleWorkout" class="flex-col items-center-flex ">
       <h1>{{ singleWorkout.name }}</h1>
       <h2>times per week: {{ singleWorkout.days }}</h2>
       <p>{{ singleWorkout.description }}</p>
@@ -46,8 +46,7 @@ import { IonPage,IonContent, IonHeader, IonToolbar, IonTitle, IonButton,IonCard,
 import type {Workouts} from "../utils/types"
 import Modal from '@/components/Modal.vue';
 import {ref,onMounted} from "vue"
-
-const isOpen = ref<Boolean>(false)
+const isOpen = ref(false)
 
 function updateSingle(workout : Workouts){
   isOpen.value = true

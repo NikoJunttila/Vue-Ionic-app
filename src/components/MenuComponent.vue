@@ -13,6 +13,7 @@
       </div>
       <div v-else>
         zyzz bot activated soon
+        <ion-button @click="logout">logout</ion-button>
       </div>
     </ion-content>
   </ion-menu>
@@ -45,20 +46,29 @@ import {
   IonButton
 } from "@ionic/vue";
 import ModalLogin from "./ModalLogin.vue";
-import {onAuthStateChanged} from "firebase/auth"
+import {onAuthStateChanged, signOut} from "firebase/auth"
 import {auth} from "../utils/firebase"
 import { ref, onMounted } from "vue";
-const isOpen = ref<Boolean>(false);
+const isOpen = ref(false);
 const isLoggedIn = ref(false)
 function modalChange() {
   console.log(isOpen.value)
   isOpen.value = !isOpen.value;
 }
+function logout(){
+  signOut(auth).then(() => {
+  console.log("logged out")
+}).catch((error) => {
+  console.log(error)
+});
+}
+const userRef = ref(null)
 onMounted(()=> {
     onAuthStateChanged(auth, (user) => {
         console.log(user)
         if (user){
             isLoggedIn.value = true
+            //userRef.value = user.email
         } else {
             isLoggedIn.value = false
         }

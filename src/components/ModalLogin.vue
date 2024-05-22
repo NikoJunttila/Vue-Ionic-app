@@ -1,5 +1,5 @@
 <template>
-  <ion-modal :is-open>
+  <ion-modal :isOpen>
     <ion-header>
       <ion-toolbar>
         <ion-buttons slot="start">
@@ -27,7 +27,6 @@
                     label-placement="floating"
                     type="password"
                     value="password"
-                    minlength="6"
                     ></ion-input>
                 </ion-item>
                 <div class="grid-2col">
