@@ -32,7 +32,7 @@
         <ul>
           <li v-for="(exercise, index) of plan.exercises">{{index+1}}. {{ exercise.exercise }}</li>
         </ul>
-        <IonButton color="tertiary" class="rounded2" style="width: 100%;">Start workout</IonButton>
+        <IonButton router-link="/tabs/tab2" @click="startWorkout(plan)" color="tertiary" class="rounded2" style="width: 100%;">Start workout</IonButton>
       </div>
     </div>
   </div>
@@ -49,12 +49,16 @@ import {ref,onMounted} from "vue"
 const isOpen = ref(false)
 
 function updateSingle(workout : Workouts){
-  isOpen.value = true
+  isOpen.value = !isOpen.value;
   singleWorkout.value = workout
 }
-
+function startWorkout(plan: any){
+  isOpen.value = !isOpen.value;
+  const save = JSON.stringify(plan)
+  localStorage.setItem("exercises",save)
+}
 function modalClose(){
-  isOpen.value = false
+  isOpen.value = !isOpen.value;
 }
 const workouts = ref<Workouts[] | null>(null)
 const singleWorkout = ref<Workouts | null>(null)
@@ -78,9 +82,6 @@ li{
 .rounded2{
     border-radius: 200px;
   }
-.border{
-  border: 2px solid var(--border-color);
-}
 .modal-exercises{
   border: 2px solid var(--ion-color-tertiary);
   border-radius: 15px;

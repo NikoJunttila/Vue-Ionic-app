@@ -3,11 +3,11 @@ export interface Workouts {
     description : string;
     days : string;
     id : number;
-    plans : singleWorkout[];
+    plans : SingleWorkout[];
     madeBy : string;
     sort: number
 }
-export interface singleWorkout {
+export interface SingleWorkout {
     notes? : string;
     date: any;
     aproxTime: number;
@@ -33,10 +33,10 @@ export interface rlyDunno {
 }
 export interface EXERCISES {
     name : string;
-    sets? : number;
-    reps? : number;
-    setsDone?: number;
-    done?: boolean;
+    sets : number;
+    reps : number;
+    setsDone: number;
+    done: boolean;
 }
 
 export interface quote {

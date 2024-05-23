@@ -9,8 +9,6 @@
         </ion-toolbar>
       </ion-header>
       <ion-content class="ion-padding" color="primary">
-<!--         <ion-item>
-        </ion-item> -->
        <slot></slot>
       </ion-content>
     </ion-modal>

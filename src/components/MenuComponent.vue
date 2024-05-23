@@ -52,7 +52,6 @@ import { ref, onMounted } from "vue";
 const isOpen = ref(false);
 const isLoggedIn = ref(false)
 function modalChange() {
-  console.log(isOpen.value)
   isOpen.value = !isOpen.value;
 }
 function logout(){
