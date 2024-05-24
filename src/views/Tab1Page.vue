@@ -55,7 +55,8 @@ function updateSingle(workout : Workouts){
 function startWorkout(plan: any){
   isOpen.value = !isOpen.value;
   const save = JSON.stringify(plan)
-  localStorage.setItem("exercises",save)
+  localStorage.setItem("workout",save)
+  localStorage.setItem("initWorkout",save)
 }
 function modalClose(){
   isOpen.value = !isOpen.value;

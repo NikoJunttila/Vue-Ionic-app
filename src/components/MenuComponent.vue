@@ -6,14 +6,15 @@
       </ion-toolbar>
     </ion-header>
     <ion-content class="ion-padding">
-      <div v-if="!isLoggedIn">
+      {{ JSON.stringify(userStore.user) }}
+      <div v-if="!userStore.user">
         Login to get access to zyzz bot and music
         <br>
         <IonButton expand="full" @click="modalChange">Login</IonButton>
       </div>
       <div v-else>
         zyzz bot activated soon
-        <ion-button @click="logout">logout</ion-button>
+        <ion-button @click="logout">Logout</ion-button>
       </div>
     </ion-content>
   </ion-menu>
@@ -46,11 +47,13 @@ import {
   IonButton
 } from "@ionic/vue";
 import ModalLogin from "./ModalLogin.vue";
-import {onAuthStateChanged, signOut} from "firebase/auth"
+import {signOut} from "firebase/auth"
 import {auth} from "../utils/firebase"
 import { ref, onMounted } from "vue";
+import { useUserStore } from "@/store/userStore";
 const isOpen = ref(false);
 const isLoggedIn = ref(false)
+const userStore = useUserStore();
 function modalChange() {
   isOpen.value = !isOpen.value;
 }
@@ -62,15 +65,4 @@ function logout(){
 });
 }
 const userRef = ref(null)
-onMounted(()=> {
-    onAuthStateChanged(auth, (user) => {
-        console.log(user)
-        if (user){
-            isLoggedIn.value = true
-            //userRef.value = user.email
-        } else {
-            isLoggedIn.value = false
-        }
-    })
-})
 </script>

@@ -21,7 +21,7 @@ export interface dunno {
     setsDone: number;
     done: boolean;
     weight?: number;
-    editing?:boolean;
+    editing:boolean;
 }
 export interface subWorkout {
     name: string;

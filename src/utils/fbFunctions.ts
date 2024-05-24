@@ -10,6 +10,7 @@ import {
   limit,
   collection
 } from "firebase/firestore";
+import { onAuthStateChanged } from "firebase/auth";
 
 export async function getDocument(collection: string, id: string) {
   const docRef = doc(db, collection, id);
@@ -36,7 +37,6 @@ export async function createDocument(
   obj: any
 ) {
   try {
-    // @ts-ignore
     const ref = doc(db, coll, `${path}`);
     const promise = await setDoc(ref, obj);
     console.log(`succesfully set new ${coll}`);
@@ -68,3 +68,36 @@ export async function fetchDocumentsWhere(
   }
   return [];
 }
+async function addCompletedWorkout(emailLower: string, workout: any) {
+  const idCrypt = window.crypto.randomUUID();
+  try {
+    const ref = doc(db, "users", emailLower,"completedWorkouts",idCrypt);
+    const promise = await setDoc(ref, workout);
+    console.log(`succesfully set new workout`);
+  } catch (err) {
+    console.log(err);
+  }
+} 
+function getCurrentUserByEmail() {
+  return new Promise((resolve, reject) => {
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        try {
+          const email = user.email;
+          const userDocRef = doc(db, "users", email?.toLowerCase());
+          const userDoc = await getDoc(userDocRef);
+
+          if (userDoc.exists()) {
+            resolve(userDoc.data());
+          } else {
+            reject("No user found with the provided email.");
+          }
+        } catch (error) {
+          reject("Error getting user document: " + error.message);
+        }
+      } else {
+        reject("No authenticated user found.");
+      }
+    });
+  });
+};

@@ -155,3 +155,18 @@ html,body{
   .flex{
 	display: flex;
   }
+  .flex-end{
+	justify-content: flex-end;
+  }
+  .overflow-hidden{
+	overflow: hidden;
+  }
+  .bg-secondary{
+	background-color: var(--ion-color-secondary);
+  }
+  .bg-tertiary{
+	background-color: var(--ion-color-tertiary);
+  }
+  .w-full{
+	width: 100%;
+  }
