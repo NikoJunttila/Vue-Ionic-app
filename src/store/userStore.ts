@@ -4,15 +4,15 @@ import { ref } from 'vue';
 import { auth, db } from "../utils/firebase"
 import { doc, getDoc } from 'firebase/firestore';
 import { onAuthStateChanged } from 'firebase/auth';
-
+import type {UserProfile} from "../utils/types"
 export const useUserStore = defineStore('user', () => {
-    const user = ref(null);
+    const user = ref<UserProfile|null>(null);
   
     // Function to fetch user data
-    const fetchUser = async (email) => {
+    const fetchUser = async (email : string) => {
       try {
-        const userDocRef = doc(db, 'users', email);
-        const userDoc = await getDoc(userDocRef);
+        const userDocRef = doc(db, 'users', email.toLowerCase());
+        const userDoc = await getDoc(userDocRef) as any;
         if (userDoc.exists()) {
           user.value = userDoc.data();
         } else {

@@ -27,7 +27,7 @@
   </ion-content>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref } from "vue";
 import { IonButton, IonContent } from "@ionic/vue";
 import {
@@ -47,10 +47,9 @@ const file = ref(null);
 const uploading = ref(false);
 const uploadProgress = ref(0);
 const downloadURL = ref("");
-const handleFileChange = (event) => {
+const handleFileChange = (event : any) => {
   file.value = event.target.files[0];
 };
-const toSave = ref(null);
 const uploadFile = () => {
   if (!file.value) return;
   if (!selected.value) return;
@@ -90,10 +89,6 @@ const uploadFile = () => {
     }
   );
 };
-function submit() {
-  toSave.value.artist = artist.value;
-  console.log(toSave);
-}
 </script>
 
 <style scoped>

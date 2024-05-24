@@ -182,6 +182,7 @@ import type { SingleWorkout } from "@/utils/types";
 import { onMounted, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 import {useUserStore} from "../store/userStore"
+import {addCompletedWorkout} from "../utils/fbFunctions"
 const route = useRoute();
 const workoutSingle = ref<SingleWorkout | null>(null);
 const startedTotalTimer = ref(false);
@@ -202,6 +203,12 @@ onMounted(() => {
   const jason2 = localStorage.getItem("workoutStartDate");
       if (jason2) {
         startedTotalTimer.value = true;
+      }
+  const jason3 = localStorage.getItem("audio")
+      if(jason3){
+        const ihatetypescript = JSON.parse(jason3)
+        if (ihatetypescript === "true")
+        playAudio.value = true
       }
 });
 watch(
@@ -265,27 +272,29 @@ function notes() {
   showTextArea.value = !showTextArea.value
 }
 
-function saveTofirebase() {
+async function saveTofirebase() {
   const date = new Date();
   workoutSingle.value.date = date
   const startedTime = new Date(JSON.parse(localStorage.getItem('workoutStartDate')));
+  // @ts-ignore
   const diffInMs = Math.abs(startedTime - date)
   const diffInMinutes = Math.floor(diffInMs / 60000)
     if(20 <= diffInMinutes && diffInMinutes < 240){
       workoutSingle.value.aproxTime = diffInMinutes + 10
     }
+    const res = await addCompletedWorkout(userStore.user.email_lower,workoutSingle.value)
     //update firebase here
     console.log("updatiing")
     reset()
 }
 
 function mute() {
-  localStorage.setItem('audio',false)
+  localStorage.setItem('audio',"false")
   playAudio.value = false
 }
 
 function unMute() {
-  localStorage.setItem('audio',true)
+  localStorage.setItem('audio',"true")
   playAudio.value = true
 }
 

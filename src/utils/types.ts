@@ -49,3 +49,17 @@ export interface guide {
     description : string;
     link? : any;
 }
+export interface song{
+        name: string,
+        artist: string,
+        genre: string,
+        url: string
+}
+export interface UserProfile {
+    accountType: string;
+    displayName: string;
+    displayName_lower: string;
+    email: string;
+    email_lower: string;
+    photoURL: string;
+}

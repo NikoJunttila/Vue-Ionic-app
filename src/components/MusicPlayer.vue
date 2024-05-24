@@ -1,3 +1,4 @@
+<!-- @ts-nocheck -->
 <template>
   <ion-content>
     <div class="music-player flex-col">
@@ -29,9 +30,9 @@
       <div class="volume-control">
         <ion-label>Volume</ion-label>
         <ion-range
-          min="0"
-          max="1"
-          step="0.01"
+          :min="0"
+          :max="1"
+          :step="0.01"
           v-model="volume"
           @ionChange="changeVolume"
         ></ion-range>
@@ -43,12 +44,12 @@
   </ion-content>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, watch, onMounted, onUnmounted } from "vue";
 import { IonButton, IonContent, IonLabel, IonRange } from "@ionic/vue";
 import { fetchDocumentsWhere } from "@/utils/fbFunctions";
 import { genresGlobal } from "@/utils/variables";
-
+import type { song } from "@/utils/types";
 const songs = ref([
   {
     name: "Tiktok star",
@@ -72,15 +73,15 @@ const songs = ref([
 const genres = genresGlobal;
 const selected = ref("Rock");
 const currentIndex = ref(0);
-const currentSong = ref(songs.value[currentIndex.value]);
+const currentSong = ref<song>(songs.value[currentIndex.value]);
 
-const audio = ref(null);
+const audio = ref<any>(null);
 const isPlaying = ref(false);
 const currentTime = ref("0:00");
 const duration = ref("0:00");
-const volume = ref(0.5); // Default volume set to 50%
+const volume = ref(0.2); // Default volume set to 20%
 
-function changeSong(index){
+function changeSong(index : number){
   currentIndex.value = index;
   currentSong.value = songs.value[currentIndex.value]
 }
@@ -116,7 +117,7 @@ function onEnded() {
   nextSong();
 }
 
-function formatTime(time) {
+function formatTime(time : any) {
   const minutes = Math.floor(time / 60);
   const seconds = Math.floor(time % 60);
   return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
@@ -138,8 +139,8 @@ watch(currentSong, () => {
 });
 
 watch(selected, async () => {
-  const res = await fetchDocumentsWhere("music", "genre", selected.value, 100);
-  if (!res.length != 0) return;
+  const res : any = await fetchDocumentsWhere("music", "genre", selected.value, 100);
+  if (res.length === 0) return;
   songs.value = res;
   shuffle(songs.value);
   currentSong.value = songs.value[currentIndex.value];
@@ -148,8 +149,8 @@ watch(selected, async () => {
 watch(volume, changeVolume);
 
 onMounted(async () => {
-  const res = await fetchDocumentsWhere("music", "genre", selected.value, 100);
-  if (res.length != 0) {
+  const res : any = await fetchDocumentsWhere("music", "genre", selected.value, 100);
+  if (res.length !== 0) {
     songs.value = res;
   }
   shuffle(songs.value);
@@ -180,7 +181,7 @@ onUnmounted(() => {
     });
   }
 });
-function shuffle(array) {
+function shuffle(array : any) {
   let currentIndex = array.length;
   // While there remain elements to shuffle...
   while (currentIndex != 0) {
