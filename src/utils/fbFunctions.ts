@@ -30,6 +30,14 @@ export async function getCollection(coll: string): Promise<any> {
   }));
   return data;
 }
+export async function getDoneWorkoutsCollection(emailLower: string): Promise<any> {
+  const querySnapshot = await getDocs(collection(db, "users",emailLower,"completedWorkouts"));
+  const data: any = querySnapshot.docs.map((doc) => ({
+    id: doc.id,
+    ...doc.data(),
+  }));
+  return data;
+}
 export async function createDocument(
   coll: string,
   path: string,

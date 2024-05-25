@@ -170,6 +170,21 @@ html,body{
   .w-full{
 	width: 100%;
   }
+  .h-full{
+	height: 100%;
+  }
+  .h-full-i{
+	height: 100% !important;
+  }
   p-5{
 	padding: 0.5rem;
+  }
+  .min-h-full{
+	min-height: 100%;
+  }
+  .min-w-full{
+	min-width: 100%;
+  }
+  .fit-content{
+	object-fit: cover
   }
