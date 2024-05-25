@@ -8,39 +8,80 @@
     <ion-content color="primary" class="ion-padding">
       <div v-if="!userStore.user">
         Login to get access to zyzz bot and music
-        <br>
-        <IonButton expand="full" @click="modalChange">Login</IonButton>
+        <br />
+        <IonButton color="tertiary" expand="full" @click="modalChange">Login</IonButton>
       </div>
       <div v-else>
         <div class="chat-container grid gap-2">
-          <div class="border bg-secondary rounded" style="padding: 0.3rem;" v-for="chat of generated_text">
-            <p class="font-bold" style="font-size: 1rem;" v-if="chat.role !== 'user'">Zyzz bot</p>
+          <div
+            class="border bg-secondary rounded"
+            style="padding: 0.3rem"
+            v-for="chat of generated_text"
+          >
+            <p
+              class="font-bold"
+              style="font-size: 1rem"
+              v-if="chat.role !== 'user'"
+            >
+              Zyzz bot
+            </p>
             <p>{{ chat.content }}</p>
           </div>
         </div>
-        <div class="grid" style="margin-top: 10px;">
-          <textarea rows="5" class="rounded"style="padding: 0.2rem;" placeholder="ask zyzz bot for exercise info / replacement for exercise or anything you need help with!" v-model="input_text" id="user-input" type="text" autocomplete="off"></textarea>
-          <ion-button color="tertiary" @click="sendText" id="sendButton">Send message</ion-button>
-          <ion-button color="warning" @click="clearText" style="margin-top: 15px;" id="clear">Clear chat</ion-button>
+        <div class="grid" style="margin-top: 10px">
+          <textarea
+            rows="5"
+            class="rounded"
+            style="padding: 0.2rem"
+            placeholder="ask zyzz bot for exercise info / replacement for exercise or anything you need help with!"
+            v-model="input_text"
+            id="user-input"
+            type="text"
+            autocomplete="off"
+          ></textarea>
+          <ion-button color="tertiary" @click="sendText" id="sendButton"
+            >Send message</ion-button
+          >
+          <ion-button
+            color="warning"
+            @click="clearText"
+            style="margin-top: 15px"
+            id="clear"
+            >Clear chat</ion-button
+          >
         </div>
       </div>
     </ion-content>
   </ion-menu>
   <ion-page id="main-content">
     <ion-header>
-      <ion-toolbar>
+      <ion-toolbar color="tertiary">
         <ion-buttons slot="end">
           <ion-menu-button></ion-menu-button>
         </ion-buttons>
-        <ion-title>
-          <h1 v-if="!userStore.user">Menu</h1>
-          <IonButton v-else router-link="/tabs/profile">User link</IonButton>
-        </ion-title>
+        <div class="w-full">
+          <ion-thumbnail v-if="!userStore.user" @click="isOpen = true" class="mx-auto">
+            <img
+              alt="Silhouette of mountains"
+              src="https://ionicframework.com/docs/img/demos/thumbnail.svg"
+            />
+          </ion-thumbnail>
+          <ion-thumbnail v-else router-link="/tabs/profile" class="mx-auto">
+            <img
+              alt="user"
+              :src="userStore.user.photoURL"
+            />
+          </ion-thumbnail>
+        </div>
       </ion-toolbar>
     </ion-header>
     <ion-content class="ion-padding">
       <slot></slot>
-      <ModalLogin :isOpen="isOpen" @some-event="modalChange" :isLoggedIn="isLoggedIn"></ModalLogin>
+      <ModalLogin
+        :isOpen="isOpen"
+        @some-event="modalChange"
+        :isLoggedIn="isLoggedIn"
+      ></ModalLogin>
     </ion-content>
   </ion-page>
 </template>
@@ -55,43 +96,48 @@ import {
   IonPage,
   IonTitle,
   IonToolbar,
-  IonButton
+  IonButton,
+  IonThumbnail,
 } from "@ionic/vue";
 import ModalLogin from "./ModalLogin.vue";
 import { ref, onMounted } from "vue";
 import { useUserStore } from "@/store/userStore";
-import {openai} from "../utils/openAi"
+import { openai } from "../utils/openAi";
 const isOpen = ref(false);
-const isLoggedIn = ref(false)
+const isLoggedIn = ref(false);
 const userStore = useUserStore();
 const input_text = ref("");
-const generated_text = ref([{
-  "content":"Hello how can I help you today?",
-  "role":"zyzz bot"
-}]);
+const generated_text = ref([
+  {
+    content: "Hello how can I help you today?",
+    role: "zyzz bot",
+  },
+]);
 async function sendText() {
   const promtObj = {
-    role:"user",
-    content: input_text.value
-  }
-  generated_text.value.push(promtObj)
+    role: "user",
+    content: input_text.value,
+  };
+  generated_text.value.push(promtObj);
   const prompt = input_text.value;
   const response = await openai.chat.completions.create({
     messages: [promtObj],
-    model: 'gpt-3.5-turbo',
+    model: "gpt-3.5-turbo",
   });
-  console.log(response)
+  console.log(response);
   generated_text.value.push(response.choices[0].message);
-  input_text.value = ""
+  input_text.value = "";
 }
-function clearText(){
-  generated_text.value = [{
-  "content":"Hello how can I help you today?",
-  "role":"zyzz bot"
-}]
+function clearText() {
+  generated_text.value = [
+    {
+      content: "Hello how can I help you today?",
+      role: "zyzz bot",
+    },
+  ];
 }
 function modalChange() {
   isOpen.value = !isOpen.value;
 }
-const userRef = ref(null)
+const userRef = ref(null);
 </script>

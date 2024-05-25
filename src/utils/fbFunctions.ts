@@ -7,7 +7,8 @@ import {
   where,
   query,
   limit,
-  collection
+  collection,
+  writeBatch,
 } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
 
@@ -30,19 +31,31 @@ export async function getCollection(coll: string): Promise<any> {
   }));
   return data;
 }
-export async function getDoneWorkoutsCollection(emailLower: string): Promise<any> {
-  const querySnapshot = await getDocs(collection(db, "users",emailLower,"completedWorkouts"));
+export async function getDoneWorkoutsCollection(
+  emailLower: string
+): Promise<any> {
+  const querySnapshot = await getDocs(
+    collection(db, "users", emailLower, "completedWorkouts")
+  );
   const data: any = querySnapshot.docs.map((doc) => ({
     id: doc.id,
     ...doc.data(),
   }));
   return data;
 }
-export async function createDocument(
-  coll: string,
-  path: string,
-  obj: any
-) {
+export async function getCustomWorkoutsCollection(
+  emailLower: string
+): Promise<any> {
+  const querySnapshot = await getDocs(
+    collection(db, "users", emailLower, "addedWorkouts")
+  );
+  const data: any = querySnapshot.docs.map((doc) => ({
+    id: doc.id,
+    ...doc.data(),
+  }));
+  return data;
+}
+export async function createDocument(coll: string, path: string, obj: any) {
   try {
     const ref = doc(db, coll, `${path}`);
     const promise = await setDoc(ref, obj);
@@ -78,11 +91,27 @@ export async function fetchDocumentsWhere(
 export async function addCompletedWorkout(emailLower: string, workout: any) {
   const idCrypt = window.crypto.randomUUID();
   try {
-    const ref = doc(db, "users", emailLower,"completedWorkouts",idCrypt);
+    const ref = doc(db, "users", emailLower, "completedWorkouts", idCrypt);
     const promise = await setDoc(ref, workout);
-    return "succesfully set new workout"
+    return "succesfully set new workout";
   } catch (err) {
     console.log(err);
-    return `${err}`
+    return `${err}`;
   }
-} 
+}
+export async function updateWorkouts(workout: any, emailLower: string) {
+  try {
+    const batch = writeBatch(db);
+
+    const ref1 = doc(db, "users", emailLower, "addedWorkouts", workout.id);
+    batch.set(ref1, workout);
+
+    const ref2 = doc(db, "workoutsPersonal", workout.id);
+    batch.set(ref2, workout);
+
+    await batch.commit();
+    console.log("updated workouts");
+  } catch (error) {
+    console.error("Error updating workouts: ", error);
+  }
+}

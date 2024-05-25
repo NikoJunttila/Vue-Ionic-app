@@ -1,6 +1,6 @@
 <!-- @ts-nocheck -->
 <template>
-  <ion-content>
+  <ion-content color="primary">
     <div class="music-player flex-col">
       <label
         >Select genre:
@@ -9,13 +9,13 @@
         </select>
       </label>
       <div class="grid-3col">
-        <ion-button :disabled="currentIndex === 0" @click="prevSong"
+        <ion-button color="tertiary" :disabled="currentIndex === 0" @click="prevSong"
           >Prev</ion-button
         >
-        <ion-button @click="togglePlay">{{
+        <ion-button color="tertiary" @click="togglePlay">{{
           isPlaying ? "Pause" : "Play"
         }}</ion-button>
-        <ion-button @click="nextSong">Next</ion-button>
+        <ion-button color="tertiary" @click="nextSong">Next</ion-button>
       </div>
       <audio
         ref="audio"
@@ -30,6 +30,7 @@
       <div class="volume-control">
         <ion-label>Volume</ion-label>
         <ion-range
+          color="tertiary"
           :min="0"
           :max="1"
           :step="0.01"
@@ -203,7 +204,6 @@ function shuffle(array : any) {
   padding: 20px;
 }
 .song-list-container{
-  background-color: var(--ion-color-secondary);
   padding: 10px 0;
   overflow-y: scroll; 
   height:230px;
@@ -219,5 +219,10 @@ function shuffle(array : any) {
 }
 .volume-control {
   margin-top: 20px;
+}
+select{
+  border-radius: 5px;
+  color:black;
+  padding: 5px;
 }
 </style>

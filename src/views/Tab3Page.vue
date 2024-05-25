@@ -1,8 +1,6 @@
 <template>
   <ion-page>
-    <ExploreContainer></ExploreContainer>
     <MusicPlayer></MusicPlayer>
-    <IonButton href="/tabs/admin">Admin</IonButton>
   </ion-page>
 </template>
 

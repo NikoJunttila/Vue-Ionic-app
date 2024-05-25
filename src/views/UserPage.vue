@@ -48,14 +48,14 @@
                 {{ formatDate(workoutToShow.date.toDate()) }}<br>
               aprox: {{ workoutToShow.aproxTime }} minutes
             </div>
-            <li style="padding: 2px 0;" v-for="exercise of workoutToShow.exercises">
+            <li style="padding: 5px 0;" v-for="exercise of workoutToShow.exercises">
               <span>
                 {{ exercise.exercise }}
                 <span v-if="exercise.weight">{{ exercise.weight }}kg</span>
                 {{ exercise.setsDone }}x{{ exercise.reps }}
               </span>
             </li>
-            <div class="text-center bg-tertiary" style="padding: 10px 0;" v-if="workoutToShow.notes">
+            <div class="text-center bg-tertiary" style="padding: 10px 5px;" v-if="workoutToShow.notes">
               {{ workoutToShow.notes }}
             </div>
           </div>
@@ -66,15 +66,6 @@
       </section>
     </ion-content>
   </ion-page>
-  <ion-popover
-    :is-open="popoverOpen"
-    :event="event"
-    @didDismiss="popoverOpen = false"
-  >
-    <ion-content class="ion-padding">Hello World!</ion-content>
-  </ion-popover>
-
-
 </template>
 
 <script setup lang="ts">
