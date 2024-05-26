@@ -6,9 +6,9 @@
     <IonContent color="primary">
       <ion-item color="primary">
         <ion-label
-          >Basic workouts for you to get started out at the gym.</ion-label
-        >
-      </ion-item>
+          >Basic workouts for you to get started out at the gym.</ion-label>
+        </ion-item>
+      <IonButton expand="full" color="warning" v-if="userStore.user" @click="updateCustoms">get your workouts if not showing</IonButton>
       <div v-if="workoutsCustom" class="grid-2col gap-2" style="margin: 15px">
         <ion-card
           color="secondary"
@@ -122,6 +122,14 @@ const workouts = ref<Workouts[] | null>(null);
 const workoutsCustom = ref<Workouts[] | null>(null);
 const singleWorkout = ref<Workouts | null>(null);
 
+async function updateCustoms(){
+  if (userStore.user) {
+    const customs = await getCustomWorkoutsCollection(
+      userStore.user.email_lower
+    );
+    workoutsCustom.value = customs;
+  }
+}
 
 function updateSingle(workout: Workouts) {
   isOpen.value = !isOpen.value;
