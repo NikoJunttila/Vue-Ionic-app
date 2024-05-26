@@ -114,13 +114,13 @@ const generated_text = ref([
   },
 ]);
 async function sendText() {
-  const promtObj = {
+  const promtObj : any = {
     role: "user",
     content: input_text.value,
   };
   generated_text.value.push(promtObj);
   const prompt = input_text.value;
-  const response = await openai.chat.completions.create({
+  const response : any = await openai.chat.completions.create({
     messages: [promtObj],
     model: "gpt-3.5-turbo",
   });

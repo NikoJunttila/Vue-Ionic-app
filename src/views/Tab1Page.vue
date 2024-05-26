@@ -148,13 +148,13 @@ onMounted(async () => {
     workoutsCustom.value = customs;
   }
 });
-watch(userStore.user, async () => {
+/* watch(userStore.user, async () => {
   setTimeout(async()=> {
     if (!userStore.user) return;
     const customs = await getCustomWorkoutsCollection(userStore.user.email_lower);
     workoutsCustom.value = customs;
   },500)
-});
+}); */
 </script>
 
 <style scoped>

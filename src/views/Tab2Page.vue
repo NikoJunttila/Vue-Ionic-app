@@ -312,8 +312,10 @@ async function saveTofirebase() {
         const updatedObject : any = {
             ...toUpdate,
             plans: [
+              // @ts-ignore
               ...toUpdate.plans.slice(0, updateExercises.index), // Copy the plans before the desired index
               updateExercises, // Update the plan at the desired index
+              // @ts-ignore
               ...toUpdate.plans.slice(updateExercises.index + 1) // Copy the plans after the desired index
             ]
           };
