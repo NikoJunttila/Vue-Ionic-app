@@ -38,19 +38,21 @@
           @ionChange="changeVolume"
         ></ion-range>
       </div>
+      <ion-checkbox justify="start" v-model="autoPlay" color="tertiary">Auto play music</ion-checkbox>
     </div>
       <div class="song-list-container grid-1col gap-2">
-        <button class="song-list" @click="changeSong(index)" v-for="(song, index) of songs">{{ song.artist }} - {{ song.name }}</button>
+        <button style="color:black;" class="song-list" @click="changeSong(index)" v-for="(song, index) of songs">{{ song.artist }} - {{ song.name }}</button>
       </div>
   </ion-content>
 </template>
 
 <script setup lang="ts">
 import { ref, watch, onMounted, onUnmounted } from "vue";
-import { IonButton, IonContent, IonLabel, IonRange } from "@ionic/vue";
+import { IonButton, IonContent, IonLabel, IonRange, IonCheckbox } from "@ionic/vue";
 import { fetchDocumentsWhere } from "@/utils/fbFunctions";
 import { genresGlobal } from "@/utils/variables";
 import type { song } from "@/utils/types";
+import { Preferences } from '@capacitor/preferences';
 const songs = ref([
   {
     name: "Tiktok star",
@@ -80,11 +82,29 @@ const audio = ref<any>(null);
 const isPlaying = ref(false);
 const currentTime = ref("0:00");
 const duration = ref("0:00");
+const autoPlay = ref(false)
 const volume = ref(0.2); // Default volume set to 20%
 
 function changeSong(index : number){
   currentIndex.value = index;
   currentSong.value = songs.value[currentIndex.value]
+}
+
+async function setObject() {
+  await Preferences.set({
+    key: 'audio',
+    value: JSON.stringify({
+      autoPlay: autoPlay.value,
+      audioVol: volume.value
+    })
+  });
+}
+async function getObject() {
+  const ret = await Preferences.get({ key: 'audio' });
+  const audioObj = JSON.parse(ret.value);
+  if(audioObj.audioVol && audioObj.autoPlay)
+  volume.value = audioObj.audioVol
+  autoPlay.value = audioObj.autoPlay
 }
 
 function togglePlay() {
@@ -94,7 +114,6 @@ function togglePlay() {
   } else {
     audio.value.play();
   }
-
   isPlaying.value = !isPlaying.value;
 }
 
@@ -127,6 +146,7 @@ function formatTime(time : any) {
 function changeVolume() {
   if (audio.value) {
     audio.value.volume = volume.value;
+    setObject()
   }
 }
 watch(currentSong, () => {
@@ -155,6 +175,7 @@ onMounted(async () => {
     songs.value = res;
   }
   shuffle(songs.value);
+  await getObject()
   currentSong.value = songs.value[currentIndex.value];
   if (audio.value) {
     audio.value.addEventListener("loadedmetadata", () => {

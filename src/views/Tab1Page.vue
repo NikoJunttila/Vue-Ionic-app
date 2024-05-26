@@ -8,7 +8,7 @@
         <ion-label
           >Basic workouts for you to get started out at the gym.</ion-label>
         </ion-item>
-      <IonButton expand="full" color="warning" v-if="userStore.user" @click="updateCustoms">get your workouts if not showing</IonButton>
+      <IonButton expand="full" color="tertiary" v-if="userStore.user" @click="updateCustoms">Update custom workouts</IonButton>
       <div v-if="workoutsCustom" class="grid-2col gap-2" style="margin: 15px">
         <ion-card
           color="secondary"

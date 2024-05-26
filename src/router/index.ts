@@ -35,6 +35,10 @@ const routes: Array<RouteRecordRaw> = [
       {
         path: 'profile',
         component: () => import('@/views/UserPage.vue')
+      },
+      {
+        path: 'exercises/:name',
+        component: () => import('@/views/ExerciseInfo.vue')
       }
     ]
   }

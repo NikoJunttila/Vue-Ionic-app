@@ -79,7 +79,7 @@
             </div>
           </div>
         </section>
-        <div class="grid-2col mx-2 gap-2">
+        <div class="grid-2col text-center">
           
           <ion-datetime
             v-model="firstDate"
@@ -92,7 +92,7 @@
             presentation="month-year"
           ><span slot="title">To:</span></ion-datetime>
         </div>
-        <ion-button color="tertiary" @click="test">Filter workouts</ion-button>
+        <ion-button color="tertiary" @click="filterWorkouts">Filter workouts</ion-button>
         <ion-button router-link="/tabs/admin" v-if="userStore.user.accountType === 'admin'" color="success" expand="full"
           >Add music</ion-button
         >
@@ -119,6 +119,7 @@ import { auth } from "../utils/firebase";
 import { getDoneWorkoutsCollection } from "@/utils/fbFunctions";
 import { ref, watch, onMounted } from "vue";
 import type { SingleWorkout, Workouts } from "@/utils/types";
+import { presentToast } from "@/utils/toasts";
 const trainingDone = ref({
   timeSpentHours: 0,
   timeSpentMinutes: 0,
@@ -132,19 +133,9 @@ const workoutsDone = ref<SingleWorkout[] | null>(null);
 const workoutsDoneFull = ref<SingleWorkout[] | null>(null);
 const workoutToShow = ref<SingleWorkout | null>(null);
 
-function test() {
-/*   const date1 = new Date(firstDate.value);
-  const timestamp1 = date1.getTime();
-  const seconds1 = Math.floor(timestamp1 / 1000);
-  const date2 = new Date(secondDate.value);
-  const timestamp2 = date2.getTime();
-  const seconds2 = Math.floor(timestamp2 / 1000); */
-  /*   console.log(firstDate.value > workoutToShow.value.date) */
-  filterWorkouts()
-}
 function filterWorkouts() {
   if (!firstDate.value || !secondDate.value) {
-    console.log("no dates");
+    presentToast("select dates")
     return;
   }
   const date1 = new Date(firstDate.value);
@@ -163,6 +154,7 @@ function filterWorkouts() {
     return (!from || date >= from) && (!to || date <= to);
   });
   aproxTimeAtGym();
+  presentToast("workout list updated")
 }
 function resetArr() {
   workoutsDone.value = workoutsDoneFull.value;

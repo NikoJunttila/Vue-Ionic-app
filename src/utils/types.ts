@@ -47,7 +47,7 @@ export interface quote {
 export interface guide {
     name: string;
     description : string;
-    link? : any;
+    link : string;
 }
 export interface song{
         name: string,

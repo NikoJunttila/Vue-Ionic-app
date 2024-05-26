@@ -35,9 +35,12 @@
             ></ion-input>
           </ion-item>
           <div class="grid-2col">
-            <ion-button @click="login">Signin</ion-button
-            ><ion-button @click="register">Create</ion-button>
+            <ion-button color="tertiary" @click="login">Signin</ion-button
+            ><ion-button color="warning" @click="register">Create</ion-button>
           </div>
+          <ion-button @click="loginGoogle" expand="full" color="danger"
+            ><ion-icon :icon="logoGoogle"></ion-icon
+          ></ion-button>
         </ion-list>
       </div>
       <div v-else>
@@ -62,17 +65,21 @@ import {
   IonList,
 } from "@ionic/vue";
 import { presentToast } from "@/utils/toasts";
-import { arrowBackCircleOutline } from "ionicons/icons";
+import { arrowBackCircleOutline, logoGoogle } from "ionicons/icons";
 import { onMounted, ref } from "vue";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   onAuthStateChanged,
+  signInWithPopup,
+  GoogleAuthProvider,
 } from "firebase/auth";
-const emit = defineEmits()
+import { createDocument, getDocument } from "@/utils/fbFunctions";
+const emit = defineEmits();
 import { auth } from "../utils/firebase";
 const text = ref("");
 const pass = ref("");
+
 async function register() {
   try {
     const data = await createUserWithEmailAndPassword(
@@ -80,22 +87,67 @@ async function register() {
       text.value,
       pass.value
     );
-    presentToast("Welcome!")
+    const userDoc = await getDocument("users", text.value.toLowerCase());
+    if (userDoc) {
+      emit("someEvent");
+      presentToast("Welcome!");
+      return;
+    }
+    const user = data.user;
+    const emailLower = text.value.toLowerCase();
+    const userObj = {
+      accountType: "normie",
+      displayName: emailLower,
+      displayName_lower: emailLower,
+      email: text.value,
+      email_lower: emailLower,
+      photoURL:
+        "https://firebasestorage.googleapis.com/v0/b/portfolio-5756d.appspot.com/o/uploads%2F1679212379254_1367902251612x612.jpg?alt=media&token=d8828d33-d1ad-45aa-bbf7-2063923e7f6c",
+    };
+    const response = await createDocument("user", emailLower, userObj);
+    emit("someEvent");
+    presentToast("Welcome!");
   } catch (e) {
-    presentToast(`${e}`)
+    presentToast(`${e}`);
   }
 }
 async function login() {
   try {
     const data = await signInWithEmailAndPassword(auth, text.value, pass.value);
-    presentToast("Signed in")
-    emit('someEvent')
+    presentToast("Signed in");
+    emit("someEvent");
   } catch (e) {
-    presentToast(`${e}`)
+    presentToast(`${e}`);
   }
 }
 const props = defineProps({
   isOpen: Boolean,
   isLoggedIn: Boolean,
 });
+async function loginGoogle() {
+  const provider = new GoogleAuthProvider();
+  try {
+    const result = await signInWithPopup(auth, provider);
+    await checkAndCreateUserDocument(result.user);
+    emit("someEvent");
+    presentToast("Signed in");
+  } catch (err) {
+    presentToast(`${err}`);
+  }
+}
+
+async function checkAndCreateUserDocument(user: any) {
+  //@ts-ignore
+  const userDoc = await getDocument("users", user.email.toLowerCase());
+  if (!userDoc) {
+    const userObj = {
+      accountType: "normie",
+      displayName: user?.displayName,
+      email: user.email,
+      email_lower: user.email.toLowerCase(),
+      photoURL: user.photoURL,
+    };
+    await createDocument("user", user.email.toLowerCase(), userObj);
+  }
+}
 </script>

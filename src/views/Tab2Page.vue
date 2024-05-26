@@ -26,10 +26,10 @@
                   style="padding: 5px"
                   class="grid-3col grid-center"
                 >
-                  <span>
+                  <router-link :to="{ path: '/tabs/exercises/' + workout.exercise }">
                     {{ workout.exercise }} {{ workout.sets }}x{{ workout.reps }}
                     <span v-if="workout.weight">{{ workout.weight }}kg</span>
-                  </span>
+                  </router-link>
                   <span>Done: {{ workout.setsDone }}/{{ workout.sets }}</span>
                   <div class="flex">
                     <ion-button

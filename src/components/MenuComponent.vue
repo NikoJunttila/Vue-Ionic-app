@@ -1,7 +1,7 @@
 <template>
   <ion-menu side="end" content-id="main-content">
     <ion-header>
-      <ion-toolbar>
+      <ion-toolbar color="primary">
         <ion-title>Side bar</ion-title>
       </ion-toolbar>
     </ion-header>
@@ -122,7 +122,7 @@ async function sendText() {
   const prompt = input_text.value;
   const response : any = await openai.chat.completions.create({
     messages: [promtObj],
-    model: "gpt-3.5-turbo",
+    model: "gpt-4o",
   });
   generated_text.value.push(response.choices[0].message);
   input_text.value = "";
