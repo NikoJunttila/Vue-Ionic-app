@@ -124,7 +124,6 @@ async function sendText() {
     messages: [promtObj],
     model: "gpt-3.5-turbo",
   });
-  console.log(response);
   generated_text.value.push(response.choices[0].message);
   input_text.value = "";
 }

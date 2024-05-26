@@ -93,6 +93,9 @@
           ><span slot="title">To:</span></ion-datetime>
         </div>
         <ion-button color="tertiary" @click="test">Filter workouts</ion-button>
+        <ion-button router-link="/tabs/admin" v-if="userStore.user.accountType === 'admin'" color="success" expand="full"
+          >Add music</ion-button
+        >
         <ion-button color="warning" expand="full" @click="logout"
           >Logout</ion-button
         >

@@ -195,6 +195,7 @@ import { onMounted, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 import { useUserStore } from "../store/userStore";
 import { addCompletedWorkout, getDocument, updateWorkouts } from "../utils/fbFunctions";
+import { presentToast } from "@/utils/toasts";
 const route = useRoute();
 const workoutSingle = ref<SingleWorkout | null>(null);
 const startedTotalTimer = ref(false);
@@ -244,7 +245,6 @@ function optionalStartTime() {
 }
 
 function counterPlus(workout: any) {
-  console.log(userStore.user);
   if (!startedTotalTimer.value) {
     const currentDate = new Date();
     localStorage.setItem("workoutStartDate", JSON.stringify(currentDate));
@@ -321,7 +321,7 @@ async function saveTofirebase() {
           };
     const idk = await updateWorkouts(updatedObject, userStore.user.email_lower)
   }
-  console.log("updatiing?");
+  presentToast("Workout saved!")
   reset();
 }
 

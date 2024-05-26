@@ -1,7 +1,6 @@
 <template>
     <ion-page>
         <ion-content>
-            <h1>admin stuff</h1>
             <MusicUploader></MusicUploader>
         </ion-content>
     </ion-page>

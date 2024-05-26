@@ -122,6 +122,7 @@ const workouts = ref<Workouts[] | null>(null);
 const workoutsCustom = ref<Workouts[] | null>(null);
 const singleWorkout = ref<Workouts | null>(null);
 
+
 function updateSingle(workout: Workouts) {
   isOpen.value = !isOpen.value;
   singleWorkout.value = workout;
@@ -148,13 +149,6 @@ onMounted(async () => {
     workoutsCustom.value = customs;
   }
 });
-/* watch(userStore.user, async () => {
-  setTimeout(async()=> {
-    if (!userStore.user) return;
-    const customs = await getCustomWorkoutsCollection(userStore.user.email_lower);
-    workoutsCustom.value = customs;
-  },500)
-}); */
 </script>
 
 <style scoped>

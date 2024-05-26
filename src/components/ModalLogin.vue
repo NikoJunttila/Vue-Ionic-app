@@ -61,6 +61,7 @@ import {
   IonInput,
   IonList,
 } from "@ionic/vue";
+import { presentToast } from "@/utils/toasts";
 import { arrowBackCircleOutline } from "ionicons/icons";
 import { onMounted, ref } from "vue";
 import {
@@ -79,19 +80,18 @@ async function register() {
       text.value,
       pass.value
     );
-    console.log(`succesfull: ${data}`);
+    presentToast("Welcome!")
   } catch (e) {
-    console.log(e);
+    presentToast(`${e}`)
   }
 }
 async function login() {
-  console.log("login");
   try {
     const data = await signInWithEmailAndPassword(auth, text.value, pass.value);
-    console.log(`succesfull: ${data}`);
+    presentToast("Signed in")
     emit('someEvent')
   } catch (e) {
-    console.log(e);
+    presentToast(`${e}`)
   }
 }
 const props = defineProps({
