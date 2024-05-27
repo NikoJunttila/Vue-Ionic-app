@@ -67,7 +67,9 @@ import {
 import { fetchDocumentsWhere } from "@/utils/fbFunctions";
 import { genresGlobal } from "@/utils/variables";
 import type { song } from "@/utils/types";
-import { Preferences } from "@capacitor/preferences";
+/* import { Preferences } from "@capacitor/preferences";*/
+import { MediaSession } from "@christoffyw/capacitor-media-session";
+
 const songs = ref([
   {
     name: "Bubble gum",
@@ -88,6 +90,7 @@ const songs = ref([
     url: "https://firebasestorage.googleapis.com/v0/b/portfolio-5756d.appspot.com/o/music%2F%F0%9D%98%9A%F0%9D%98%A2%F0%9D%98%B7%F0%9D%98%A6%20%F0%9D%98%AE%F0%9D%98%A6%20(1).mp3?alt=media&token=5a68822a-f3ab-44ee-a273-1bd990f4bcb0",
   },
 ]);
+
 const genres = genresGlobal;
 const selected = ref("Rock");
 const currentIndex = ref(0);
@@ -97,27 +100,13 @@ const audio = ref<any>(null);
 const isPlaying = ref(false);
 const currentTime = ref("0:00");
 const duration = ref("0:00");
-const volume = ref(1); // Default volume set to 100%
+const volume = ref(1.0); // Default volume set to 100%
 
 function changeSong(index: number) {
   currentIndex.value = index;
   currentSong.value = songs.value[currentIndex.value];
-}
-
-async function setObject() {
-  await Preferences.set({
-    key: "audio",
-    value: JSON.stringify({
-      audioVol: volume.value,
-    }),
-  });
-}
-async function getObject() {
-  const ret = await Preferences.get({ key: "audio" });
-  const audioObj = JSON.parse(ret.value);
-  if (audioObj.audioVol) {
-    volume.value = audioObj.audioVol;
-  }
+  updateMediaSessionMetadata();
+  updatePositionState();
 }
 
 function togglePlay() {
@@ -128,17 +117,31 @@ function togglePlay() {
     audio.value.play();
   }
   isPlaying.value = !isPlaying.value;
+  updateMediaSessionPlaybackState();
+  updatePositionState()
 }
 
 function nextSong() {
   currentIndex.value = (currentIndex.value + 1) % songs.value.length;
   currentSong.value = songs.value[currentIndex.value];
+  updateMediaSessionMetadata();
+  updatePositionState()
+  if (isPlaying.value) {
+    audio.value.play();
+  }
 }
+
 function prevSong() {
   if (currentIndex.value === 0) return;
   currentIndex.value = currentIndex.value - 1;
   currentSong.value = songs.value[currentIndex.value];
+  updateMediaSessionMetadata();
+  updatePositionState()
+  if (isPlaying.value) {
+    audio.value.play();
+  }
 }
+
 function updateTime() {
   if (audio.value) {
     currentTime.value = formatTime(audio.value.currentTime);
@@ -159,15 +162,67 @@ function formatTime(time: any) {
 function changeVolume() {
   if (audio.value) {
     audio.value.volume = volume.value;
-    setObject();
   }
 }
+
+function updateMediaSessionMetadata() {
+  MediaSession.setMetadata({
+    title: currentSong.value.name,
+    artist: currentSong.value.artist,
+    album: "",
+    artwork: [
+      { src: "../../assets/splash.png", type: "image/png", sizes: "512x512" },
+    ],
+  });
+  console.log("updating MediaSession");
+}
+function updatePositionState() {
+  MediaSession.setPositionState({
+    position: audio.value.currentTime,
+    duration: audio.value.duration,
+    playbackRate: audio.value.playbackRate,
+  });
+}
+function updateMediaSessionPlaybackState() {
+  MediaSession.setPlaybackState({
+    playbackState: isPlaying.value ? "playing" : "paused",
+  });
+}
+
+function setupMediaSessionControls() {
+  MediaSession.setActionHandler({ action: "play" }, () => {
+    audio.value.play();
+    isPlaying.value = true;
+    updateMediaSessionPlaybackState();
+    updatePositionState()
+  });
+  MediaSession.setActionHandler({ action: "pause" }, () => {
+    audio.value.pause();
+    isPlaying.value = false;
+    updateMediaSessionPlaybackState();
+    updatePositionState()
+  });
+  MediaSession.setActionHandler({ action: "nexttrack" }, () => {
+    nextSong()
+  });
+  MediaSession.setActionHandler({ action: "previoustrack" }, () => {
+    prevSong()
+  });
+  MediaSession.setActionHandler({ action: 'stop' }, () => {
+    audio.value.pause();
+    isPlaying.value = false;
+});
+}
+
 watch(currentSong, () => {
   if (audio.value) {
     setTimeout(() => {
       audio.value.load();
       audio.value.play();
       isPlaying.value = true;
+      updateMediaSessionMetadata();
+      updatePositionState();
+      updateMediaSessionPlaybackState();
     }, 100);
   }
 });
@@ -183,6 +238,7 @@ watch(selected, async () => {
   songs.value = res;
   shuffle(songs.value);
   currentSong.value = songs.value[currentIndex.value];
+  updateMediaSessionMetadata();
 });
 
 watch(volume, changeVolume);
@@ -198,7 +254,6 @@ onMounted(async () => {
     songs.value = res;
   }
   shuffle(songs.value);
-  await getObject();
   currentSong.value = songs.value[currentIndex.value];
   if (audio.value) {
     audio.value.addEventListener("loadedmetadata", () => {
@@ -206,13 +261,24 @@ onMounted(async () => {
     });
     audio.value.addEventListener("play", () => {
       isPlaying.value = true;
+      updateMediaSessionPlaybackState();
+      updatePositionState()
+    });
+    audio.value.addEventListener("durationchange", () => {
+      updatePositionState()
     });
     audio.value.addEventListener("pause", () => {
       isPlaying.value = false;
+      updateMediaSessionPlaybackState();
+      updatePositionState()
     });
-    audio.value.volume = volume.value; // Initialize the volume
+    audio.value.volume = volume.value;
   }
+  setupMediaSessionControls();
+  updateMediaSessionMetadata();
+  updateMediaSessionPlaybackState();
 });
+
 onUnmounted(() => {
   if (audio.value) {
     audio.value.removeEventListener("loadedmetadata", () => {
@@ -226,6 +292,7 @@ onUnmounted(() => {
     });
   }
 });
+
 function shuffle(array: any) {
   let currentIndex = array.length;
   // While there remain elements to shuffle...
@@ -240,6 +307,23 @@ function shuffle(array: any) {
     ];
   }
 }
+/* 
+async function setObject() {
+  await Preferences.set({
+    key: "audio",
+    value: JSON.stringify({
+      audioVol: volume.value,
+    }),
+  });
+}
+
+async function getObject() {
+  const ret = await Preferences.get({ key: "audio" });
+  const audioObj = JSON.parse(ret.value);
+  if (audioObj.audioVol) {
+    volume.value = audioObj.audioVol;
+  }
+} */
 </script>
 
 <style scoped>

@@ -76,8 +76,7 @@ import {
 import { createDocument, getDocument } from "@/utils/fbFunctions";
 const emit = defineEmits();
 import { auth } from "../utils/firebase";
-import { FirebaseAuthentication } from '@capacitor-firebase/authentication';
-
+/* import { FirebaseAuthentication } from '@capacitor-firebase/authentication';*/
 const text = ref("");
 const pass = ref("");
 
@@ -125,7 +124,7 @@ const props = defineProps({
   isOpen: Boolean,
   isLoggedIn: Boolean,
 });
-const signInWithGoogle = async () => {
+/* const signInWithGoogle = async () => {
   const result = await FirebaseAuthentication.signInWithGoogle();
   return result.user;
 };
@@ -138,7 +137,7 @@ async function loginGoogle() {
   } catch (err) {
     presentToast(`${err}`);
   }
-}
+} */
 
 async function checkAndCreateUserDocument(user: any) {
   //@ts-ignore
