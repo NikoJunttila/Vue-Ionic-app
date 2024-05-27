@@ -76,7 +76,7 @@ import {
 } from "firebase/auth";
 import { createDocument, getDocument } from "@/utils/fbFunctions";
 const emit = defineEmits();
-import { auth } from "../utils/firebase";
+import { mobileAuth , auth } from "../utils/firebase";
 const text = ref("");
 const pass = ref("");
 
@@ -125,9 +125,10 @@ const props = defineProps({
   isLoggedIn: Boolean,
 });
 async function loginGoogle() {
+  const auth2 = mobileAuth()
   const provider = new GoogleAuthProvider();
   try {
-    const result = await signInWithPopup(auth, provider);
+    const result = await signInWithPopup(auth2, provider);
     await checkAndCreateUserDocument(result.user);
     emit("someEvent");
     presentToast("Signed in");

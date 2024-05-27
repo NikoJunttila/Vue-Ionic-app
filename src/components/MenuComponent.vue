@@ -27,12 +27,22 @@
             </p>
             <p>{{ chat.content }}</p>
           </div>
+          <div
+            class="border bg-secondary rounded flex items-center-flex"
+            style="padding: 0.3rem"
+            v-if="loading"
+            >
+            <span style="margin:0 5px;">Responding </span><ion-spinner style="transform: translateY(3px);" name="dots" color="light"></ion-spinner>
+          </div>
+          <div>
+          
+          </div>
         </div>
         <div class="grid" style="margin-top: 10px">
           <textarea
             rows="5"
             class="rounded"
-            style="padding: 0.2rem"
+            style="padding: 0.2rem;color: black;"
             placeholder="ask zyzz bot for exercise info / replacement for exercise or anything you need help with!"
             v-model="input_text"
             id="user-input"
@@ -98,6 +108,7 @@ import {
   IonToolbar,
   IonButton,
   IonThumbnail,
+  IonSpinner
 } from "@ionic/vue";
 import ModalLogin from "./ModalLogin.vue";
 import { ref, onMounted } from "vue";
@@ -107,6 +118,7 @@ const isOpen = ref(false);
 const isLoggedIn = ref(false);
 const userStore = useUserStore();
 const input_text = ref("");
+const loading = ref(false)
 const generated_text = ref([
   {
     content: "Hello how can I help you today?",
@@ -114,6 +126,7 @@ const generated_text = ref([
   },
 ]);
 async function sendText() {
+  loading.value = true
   const promtObj : any = {
     role: "user",
     content: input_text.value,
@@ -124,8 +137,10 @@ async function sendText() {
     messages: [promtObj],
     model: "gpt-4o",
   });
+  loading.value = false
   generated_text.value.push(response.choices[0].message);
   input_text.value = "";
+
 }
 function clearText() {
   generated_text.value = [

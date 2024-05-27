@@ -2,7 +2,7 @@ import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
   appId: 'dev.junttila.gym',
-  appName: 'gym progress',
+  appName: 'gym-progress',
   webDir: 'dist',
 };
 
