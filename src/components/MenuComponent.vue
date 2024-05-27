@@ -2,7 +2,7 @@
   <ion-menu side="end" content-id="main-content">
     <ion-header>
       <ion-toolbar color="primary">
-        <ion-title>Side bar</ion-title>
+        <ion-title>Chat with Zyzz</ion-title>
       </ion-toolbar>
     </ion-header>
     <ion-content color="primary" class="ion-padding">
@@ -65,18 +65,18 @@
   </ion-menu>
   <ion-page id="main-content">
     <ion-header>
-      <ion-toolbar color="tertiary">
+      <ion-toolbar color="success">
         <ion-buttons slot="end">
           <ion-menu-button></ion-menu-button>
         </ion-buttons>
         <div class="w-full">
-          <ion-thumbnail v-if="!userStore.user" @click="isOpen = true" class="mx-auto">
+          <ion-thumbnail v-if="!userStore.user" @click="isOpen = true" class="mx-auto move-right" >
             <img
               alt="Silhouette of mountains"
               src="https://ionicframework.com/docs/img/demos/thumbnail.svg"
             />
           </ion-thumbnail>
-          <ion-thumbnail v-else router-link="/tabs/profile" class="mx-auto">
+          <ion-thumbnail v-else router-link="/tabs/profile" class="mx-auto move-right">
             <img
               alt="user"
               :src="userStore.user.photoURL"
@@ -155,3 +155,8 @@ function modalChange() {
 }
 const userRef = ref(null);
 </script>
+<style scoped>
+.move-right{
+  transform: translateX(25px);
+}
+</style>

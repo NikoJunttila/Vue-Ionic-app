@@ -9,7 +9,10 @@
         </select>
       </label>
       <div class="grid-3col">
-        <ion-button color="tertiary" :disabled="currentIndex === 0" @click="prevSong"
+        <ion-button
+          color="tertiary"
+          :disabled="currentIndex === 0"
+          @click="prevSong"
           >Prev</ion-button
         >
         <ion-button color="tertiary" @click="togglePlay">{{
@@ -38,33 +41,45 @@
           @ionChange="changeVolume"
         ></ion-range>
       </div>
-      <ion-checkbox justify="start" v-model="autoPlay" color="tertiary">Auto play music</ion-checkbox>
     </div>
-      <div class="song-list-container grid-1col gap-2">
-        <button style="color:black;" class="song-list" @click="changeSong(index)" v-for="(song, index) of songs">{{ song.artist }} - {{ song.name }}</button>
-      </div>
+    <div class="song-list-container grid-1col gap-2">
+      <button
+        style="color: black"
+        class="song-list"
+        @click="changeSong(index)"
+        v-for="(song, index) of songs"
+      >
+        {{ song.artist }} - {{ song.name }}
+      </button>
+    </div>
   </ion-content>
 </template>
 
 <script setup lang="ts">
 import { ref, watch, onMounted, onUnmounted } from "vue";
-import { IonButton, IonContent, IonLabel, IonRange, IonCheckbox } from "@ionic/vue";
+import {
+  IonButton,
+  IonContent,
+  IonLabel,
+  IonRange,
+  IonCheckbox,
+} from "@ionic/vue";
 import { fetchDocumentsWhere } from "@/utils/fbFunctions";
 import { genresGlobal } from "@/utils/variables";
 import type { song } from "@/utils/types";
-import { Preferences } from '@capacitor/preferences';
+import { Preferences } from "@capacitor/preferences";
 const songs = ref([
-  {
-    name: "Tiktok star",
-    artist: "unknown",
-    genre: "idk",
-    url: "https://firebasestorage.googleapis.com/v0/b/portfolio-5756d.appspot.com/o/music%2Ftiktokstar.mp4?alt=media&token=0b3c1fd4-7722-41b9-94d1-fd0f141b8eaf",
-  },
   {
     name: "Bubble gum",
     artist: "unknown",
     genre: "idk",
     url: "https://firebasestorage.googleapis.com/v0/b/portfolio-5756d.appspot.com/o/music%2Fbubblegum%20bitch%20-%20hardstyle%20(1).mp3?alt=media&token=5e2f939d-8181-45a8-9b84-b2a06899ba0a",
+  },
+  {
+    name: "Tiktok star",
+    artist: "unknown",
+    genre: "idk",
+    url: "https://firebasestorage.googleapis.com/v0/b/portfolio-5756d.appspot.com/o/music%2Ftiktokstar.mp4?alt=media&token=0b3c1fd4-7722-41b9-94d1-fd0f141b8eaf",
   },
   {
     name: "save me",
@@ -82,29 +97,27 @@ const audio = ref<any>(null);
 const isPlaying = ref(false);
 const currentTime = ref("0:00");
 const duration = ref("0:00");
-const autoPlay = ref(false)
-const volume = ref(0.2); // Default volume set to 20%
+const volume = ref(1); // Default volume set to 100%
 
-function changeSong(index : number){
+function changeSong(index: number) {
   currentIndex.value = index;
-  currentSong.value = songs.value[currentIndex.value]
+  currentSong.value = songs.value[currentIndex.value];
 }
 
 async function setObject() {
   await Preferences.set({
-    key: 'audio',
+    key: "audio",
     value: JSON.stringify({
-      autoPlay: autoPlay.value,
-      audioVol: volume.value
-    })
+      audioVol: volume.value,
+    }),
   });
 }
 async function getObject() {
-  const ret = await Preferences.get({ key: 'audio' });
+  const ret = await Preferences.get({ key: "audio" });
   const audioObj = JSON.parse(ret.value);
-  if(audioObj.audioVol && audioObj.autoPlay)
-  volume.value = audioObj.audioVol
-  autoPlay.value = audioObj.autoPlay
+  if (audioObj.audioVol) {
+    volume.value = audioObj.audioVol;
+  }
 }
 
 function togglePlay() {
@@ -137,7 +150,7 @@ function onEnded() {
   nextSong();
 }
 
-function formatTime(time : any) {
+function formatTime(time: any) {
   const minutes = Math.floor(time / 60);
   const seconds = Math.floor(time % 60);
   return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
@@ -146,7 +159,7 @@ function formatTime(time : any) {
 function changeVolume() {
   if (audio.value) {
     audio.value.volume = volume.value;
-    setObject()
+    setObject();
   }
 }
 watch(currentSong, () => {
@@ -160,7 +173,12 @@ watch(currentSong, () => {
 });
 
 watch(selected, async () => {
-  const res : any = await fetchDocumentsWhere("music", "genre", selected.value, 100);
+  const res: any = await fetchDocumentsWhere(
+    "music",
+    "genre",
+    selected.value,
+    100
+  );
   if (res.length === 0) return;
   songs.value = res;
   shuffle(songs.value);
@@ -170,12 +188,17 @@ watch(selected, async () => {
 watch(volume, changeVolume);
 
 onMounted(async () => {
-  const res : any = await fetchDocumentsWhere("music", "genre", selected.value, 100);
+  const res: any = await fetchDocumentsWhere(
+    "music",
+    "genre",
+    selected.value,
+    100
+  );
   if (res.length !== 0) {
     songs.value = res;
   }
   shuffle(songs.value);
-  await getObject()
+  await getObject();
   currentSong.value = songs.value[currentIndex.value];
   if (audio.value) {
     audio.value.addEventListener("loadedmetadata", () => {
@@ -203,7 +226,7 @@ onUnmounted(() => {
     });
   }
 });
-function shuffle(array : any) {
+function shuffle(array: any) {
   let currentIndex = array.length;
   // While there remain elements to shuffle...
   while (currentIndex != 0) {
@@ -224,12 +247,12 @@ function shuffle(array : any) {
   text-align: center;
   padding: 20px;
 }
-.song-list-container{
+.song-list-container {
   padding: 10px 0;
-  overflow-y: scroll; 
-  height:230px;
+  overflow-y: scroll;
+  height: 230px;
 }
-.song-list{
+.song-list {
   text-align: center;
   padding: 5px;
   margin: 0 5px;
@@ -241,9 +264,9 @@ function shuffle(array : any) {
 .volume-control {
   margin-top: 20px;
 }
-select{
+select {
   border-radius: 5px;
-  color:black;
+  color: black;
   padding: 5px;
 }
 </style>

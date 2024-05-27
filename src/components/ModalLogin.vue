@@ -13,8 +13,7 @@
     <ion-content class="ion-padding" color="primary">
       <div v-if="!isLoggedIn">
         <p>
-          login/sign in. if account hasnt been created this will create a new
-          account for you
+          login/sign in.
         </p>
         <ion-list>
           <ion-item>
@@ -38,9 +37,9 @@
             <ion-button color="tertiary" @click="login">Signin</ion-button
             ><ion-button color="warning" @click="register">Create</ion-button>
           </div>
-          <ion-button @click="loginGoogle" expand="full" color="danger"
+<!--           <ion-button @click="loginGoogle" expand="full" color="danger"
             ><ion-icon :icon="logoGoogle"></ion-icon
-          ></ion-button>
+          ></ion-button> -->
         </ion-list>
       </div>
       <div v-else>
@@ -76,7 +75,9 @@ import {
 } from "firebase/auth";
 import { createDocument, getDocument } from "@/utils/fbFunctions";
 const emit = defineEmits();
-import { mobileAuth , auth } from "../utils/firebase";
+import { auth } from "../utils/firebase";
+import { FirebaseAuthentication } from '@capacitor-firebase/authentication';
+
 const text = ref("");
 const pass = ref("");
 
@@ -124,12 +125,14 @@ const props = defineProps({
   isOpen: Boolean,
   isLoggedIn: Boolean,
 });
+const signInWithGoogle = async () => {
+  const result = await FirebaseAuthentication.signInWithGoogle();
+  return result.user;
+};
 async function loginGoogle() {
-  const auth2 = mobileAuth()
-  const provider = new GoogleAuthProvider();
   try {
-    const result = await signInWithPopup(auth2, provider);
-    await checkAndCreateUserDocument(result.user);
+    const user = await signInWithGoogle()
+    checkAndCreateUserDocument(user);
     emit("someEvent");
     presentToast("Signed in");
   } catch (err) {
@@ -150,5 +153,6 @@ async function checkAndCreateUserDocument(user: any) {
     };
     await createDocument("user", user.email.toLowerCase(), userObj);
   }
+  return
 }
 </script>
