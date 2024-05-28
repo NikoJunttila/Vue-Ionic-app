@@ -11,7 +11,6 @@
       <div class="grid-3col">
         <ion-button
           color="tertiary"
-          :disabled="currentIndex === 0"
           @click="prevSong"
           >Prev</ion-button
         >
@@ -106,8 +105,6 @@ const volume = ref(1.0); // Default volume set to 100%
 function changeSong(index: number) {
   currentIndex.value = index;
   currentSong.value = songs.value[currentIndex.value];
-  updateMediaSessionMetadata();
-  updatePositionState();
 }
 
 function togglePlay() {
@@ -125,24 +122,25 @@ function togglePlay() {
 function nextSong() {
   currentIndex.value = (currentIndex.value + 1) % songs.value.length;
   currentSong.value = songs.value[currentIndex.value];
-  updateMediaSessionMetadata();
-  updatePositionState()
   if (isPlaying.value) {
     audio.value.play();
   }
 }
 
 function prevSong() {
-  if (audio.value.currentTime > 15){
+  if (audio.value.currentTime > 10){
     audio.value.currentTime = 0;
     updateTime()
+    updatePositionState()
   }else{
-    if (currentIndex.value === 0) return;
-    currentIndex.value = currentIndex.value - 1;
+    if (currentIndex.value === 0){
+      currentIndex.value = songs.value.length - 1
+    }else{
+      currentIndex.value = currentIndex.value - 1;
+    }
     currentSong.value = songs.value[currentIndex.value];
   }
-  updateMediaSessionMetadata();
-  updatePositionState()
+ 
   if (isPlaying.value) {
     audio.value.play();
   }
@@ -177,10 +175,12 @@ function updateMediaSessionMetadata() {
     title: currentSong.value.name,
     artist: currentSong.value.artist,
     album: "",
+    artwork: [
+      { src: "../../assets/splash.png", type: "image/png", sizes: "512x512" },
+    ],
   });
 }
 function updatePositionState() {
-  if(!audio.value.currentTime || !audio.value.duration || !audio.value.playbackRate)return
   MediaSession.setPositionState({
     position: audio.value.currentTime,
     duration: audio.value.duration,
@@ -197,14 +197,10 @@ function setupMediaSessionControls() {
   MediaSession.setActionHandler({ action: "play" }, () => {
     audio.value.play();
     isPlaying.value = true;
-    updateMediaSessionPlaybackState();
-    updatePositionState()
   });
   MediaSession.setActionHandler({ action: "pause" }, () => {
     audio.value.pause();
     isPlaying.value = false;
-    updateMediaSessionPlaybackState();
-    updatePositionState()
   });
   MediaSession.setActionHandler({ action: "nexttrack" }, () => {
     nextSong()
@@ -226,7 +222,7 @@ watch(currentSong, () => {
       updateMediaSessionMetadata();
       updatePositionState();
       updateMediaSessionPlaybackState();
-    }, 100);
+    }, 500);
   }
 });
 
@@ -241,7 +237,6 @@ watch(selected, async () => {
   songs.value = res;
   shuffle(songs.value);
   currentSong.value = songs.value[currentIndex.value];
-  updateMediaSessionMetadata();
 });
 
 watch(volume, changeVolume);
@@ -257,7 +252,6 @@ onMounted(async () => {
     songs.value = res;
   }
   shuffle(songs.value);
-  currentSong.value = songs.value[currentIndex.value];
   if (audio.value) {
     audio.value.addEventListener("loadedmetadata", () => {
       duration.value = formatTime(audio.value.duration);
@@ -275,12 +269,10 @@ onMounted(async () => {
       updateMediaSessionPlaybackState();
       updatePositionState()
     });
-    audio.value.volume = volume.value;
   }
-  getVolumeStore()
+  currentSong.value = songs.value[currentIndex.value];
   setupMediaSessionControls();
-  updateMediaSessionMetadata();
-  updateMediaSessionPlaybackState();
+  getVolumeStore()
 });
 
 onUnmounted(() => {
@@ -313,6 +305,7 @@ function shuffle(array: any) {
 }
 
 async function setVolumeStore() {
+  if(!volume.value)return
   await Preferences.set({
     key: "audio",
     value: JSON.stringify({
@@ -324,7 +317,8 @@ async function setVolumeStore() {
 async function getVolumeStore() {
   const ret = await Preferences.get({ key: "audio" });
   const audioObj = JSON.parse(ret.value);
-  if (audioObj.audioVol) {
+  console.log(audioObj)
+  if (audioObj) {
     volume.value = audioObj.audioVol;
   }
 }
