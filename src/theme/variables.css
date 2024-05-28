@@ -53,7 +53,7 @@ http://ionicframework.com/docs/theming/ */
   --ion-color-light-shade: #d8dade;
   --ion-color-light-tint: #f7f9fc;
 
-  --ion-color-medium: #5f5f5f;
+  --ion-color-medium: rgb(13, 126, 13);
   --ion-color-medium-rgb: 95, 95, 95;
   --ion-color-medium-contrast: #ffffff;
   --ion-color-medium-contrast-rgb: 255, 255, 255;
@@ -66,6 +66,18 @@ http://ionicframework.com/docs/theming/ */
   --ion-color-dark-contrast-rgb: 255, 255, 255;
   --ion-color-dark-shade: #292929;
   --ion-color-dark-tint: #444444;
+
+}
+input {
+  border-radius: 5px;
+  padding: 3px;
+  color: black;
+  background-color: aliceblue;
+}
+textarea {
+  border-radius: 5px;
+  color: black;
+  background-color: aliceblue;
 }
 ion-button{
   color: #233A66;

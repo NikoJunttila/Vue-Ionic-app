@@ -9,11 +9,7 @@
         </select>
       </label>
       <div class="grid-3col">
-        <ion-button
-          color="tertiary"
-          @click="prevSong"
-          >Prev</ion-button
-        >
+        <ion-button color="tertiary" @click="prevSong">Prev</ion-button>
         <ion-button color="tertiary" @click="togglePlay">{{
           isPlaying ? "Pause" : "Play"
         }}</ion-button>
@@ -43,9 +39,9 @@
     </div>
     <div class="song-list-container grid-1col gap-2">
       <button
-        :class='index == currentIndex ? "song-list-bg-active" : ""'
+        :class="index == currentIndex ? 'song-list-bg-active' : ''"
         class="song-list"
-        :disabled='index == currentIndex ? true : false'
+        :disabled="index == currentIndex ? true : false"
         @click="changeSong(index)"
         v-for="(song, index) of songs"
       >
@@ -116,7 +112,7 @@ function togglePlay() {
   }
   isPlaying.value = !isPlaying.value;
   updateMediaSessionPlaybackState();
-  updatePositionState()
+  updatePositionState();
 }
 
 function nextSong() {
@@ -128,19 +124,19 @@ function nextSong() {
 }
 
 function prevSong() {
-  if (audio.value.currentTime > 10){
+  if (audio.value.currentTime > 10) {
     audio.value.currentTime = 0;
-    updateTime()
-    updatePositionState()
-  }else{
-    if (currentIndex.value === 0){
-      currentIndex.value = songs.value.length - 1
-    }else{
+    updateTime();
+    updatePositionState();
+  } else {
+    if (currentIndex.value === 0) {
+      currentIndex.value = songs.value.length - 1;
+    } else {
       currentIndex.value = currentIndex.value - 1;
     }
     currentSong.value = songs.value[currentIndex.value];
   }
- 
+
   if (isPlaying.value) {
     audio.value.play();
   }
@@ -166,7 +162,7 @@ function formatTime(time: any) {
 function changeVolume() {
   if (audio.value) {
     audio.value.volume = volume.value;
-    setVolumeStore()
+    setVolumeStore();
   }
 }
 
@@ -199,18 +195,19 @@ function setupMediaSessionControls() {
     isPlaying.value = true;
   });
   MediaSession.setActionHandler({ action: "pause" }, () => {
-    audio.value.pause();
     isPlaying.value = false;
+    audio.value.pause();
   });
+
   MediaSession.setActionHandler({ action: "nexttrack" }, () => {
-    nextSong()
+    nextSong();
   });
   MediaSession.setActionHandler({ action: "previoustrack" }, () => {
-    prevSong()
+    prevSong();
   });
-  MediaSession.setActionHandler({ action: 'stop' }, () => {
-    togglePlay()
-});
+  MediaSession.setActionHandler({ action: "stop" }, () => {
+    togglePlay();
+  });
 }
 
 watch(currentSong, () => {
@@ -227,6 +224,7 @@ watch(currentSong, () => {
 });
 
 watch(selected, async () => {
+  currentIndex.value = 0
   const res: any = await fetchDocumentsWhere(
     "music",
     "genre",
@@ -259,20 +257,20 @@ onMounted(async () => {
     audio.value.addEventListener("play", () => {
       isPlaying.value = true;
       updateMediaSessionPlaybackState();
-      updatePositionState()
+      updatePositionState();
     });
     audio.value.addEventListener("durationchange", () => {
-      updatePositionState()
+      updatePositionState();
     });
     audio.value.addEventListener("pause", () => {
       isPlaying.value = false;
       updateMediaSessionPlaybackState();
-      updatePositionState()
+      updatePositionState();
     });
   }
   currentSong.value = songs.value[currentIndex.value];
   setupMediaSessionControls();
-  getVolumeStore()
+  getVolumeStore();
 });
 
 onUnmounted(() => {
@@ -305,7 +303,7 @@ function shuffle(array: any) {
 }
 
 async function setVolumeStore() {
-  if(!volume.value)return
+  if (!volume.value) return;
   await Preferences.set({
     key: "audio",
     value: JSON.stringify({
@@ -317,7 +315,7 @@ async function setVolumeStore() {
 async function getVolumeStore() {
   const ret = await Preferences.get({ key: "audio" });
   const audioObj = JSON.parse(ret.value);
-  console.log(audioObj)
+  console.log(audioObj);
   if (audioObj) {
     volume.value = audioObj.audioVol;
   }
@@ -343,7 +341,7 @@ async function getVolumeStore() {
   color: black;
   border-radius: 10px;
 }
-.song-list-bg-active{
+.song-list-bg-active {
   background-color: var(--ion-color-success) !important;
 }
 .volume-control {
@@ -354,5 +352,4 @@ select {
   color: black;
   padding: 5px;
 }
-
 </style>

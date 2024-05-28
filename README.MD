@@ -8,8 +8,6 @@ Welcome to GymTrack, a mobile application designed to enhance your gym experienc
 - [Technologies](#technologies)
 - [Installation](#installation)
 - [Usage](#usage)
-- [Contributing](#contributing)
-- [License](#license)
 
 ## Features
 

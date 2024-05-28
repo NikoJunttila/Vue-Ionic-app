@@ -2,7 +2,7 @@
   <ion-page>
     <ion-content color="primary" :fullscreen="true">
       <div v-if="workoutSingle" class="py-4 h-full">
-        <section class="flex-col h-full">
+        <section class="flex-col h-full" style="padding-top: 15px;">
           <div class="flex-col flex-items-center mx-4 gap-2">
             <div
               class="grid grid-center"
@@ -19,14 +19,15 @@
             >
               <div
                 v-if="!workout.done"
-                class="overflow-hidden rounded border bg-secondary"
+                class="overflow-hidden rounded border "
+                :class="workout.setsDone === 0 ? 'bg-secondary': workout.sets == workout.setsDone ? 'done':'started'"
               >
                 <div
                   v-if="!workout.editing"
                   style="padding: 5px"
                   class="grid-3col grid-center"
                 >
-                  <router-link :to="{ path: '/tabs/exercises/' + workout.exercise }">
+                  <router-link :to="{ path: '/tabs/exercises/' + workout.exercise }" style="color: wheat;">
                     {{ workout.exercise }} {{ workout.sets }}x{{ workout.reps }}
                     <span v-if="workout.weight">{{ workout.weight }}kg</span>
                   </router-link>
@@ -95,7 +96,8 @@
           </div>
           <div class="grid mx-6 py-4">
             <ion-button
-              color="success"
+              color="medium"
+              class="py-4"
               v-if="userStore.user && exercisesDoneBtn"
               @click="saveTofirebase"
             >
@@ -196,6 +198,8 @@ import { useRoute } from "vue-router";
 import { useUserStore } from "../store/userStore";
 import { addCompletedWorkout, getDocument, updateWorkouts } from "../utils/fbFunctions";
 import { presentToast } from "@/utils/toasts";
+import lightweight from "../../assets/lightweight.mp3"
+
 const route = useRoute();
 const workoutSingle = ref<SingleWorkout | null>(null);
 const startedTotalTimer = ref(false);
@@ -220,8 +224,9 @@ onMounted(() => {
   const jason3 = localStorage.getItem("audio");
   if (jason3) {
     const ihatetypescript = JSON.parse(jason3);
-    if (ihatetypescript === "true") playAudio.value = true;
+    if (ihatetypescript == true) playAudio.value = true;
   }
+  loopReps()
 });
 watch(
   () => route.fullPath,
@@ -325,7 +330,7 @@ async function saveTofirebase() {
   reset();
 }
 
-function mute() {
+function mute(){
   localStorage.setItem("audio", "false");
   playAudio.value = false;
 }
@@ -353,6 +358,12 @@ function decreaseTime() {
 function roundToNearest15(number: number) {
   return Math.ceil(number / 15) * 15;
 }
+function playAudiofunc(){
+  const audio = new Audio();
+  audio.src = lightweight;
+  audio.volume = 0.5
+  audio.play();
+}
 function startTimer() {
   clearInterval(interval);
   interval = setInterval(() => {
@@ -364,8 +375,7 @@ function startTimer() {
     } else {
       clearInterval(interval);
       if (playAudio.value === true) {
-        //playRandomAudio()
-        console.log("yeaah buddy");
+        playAudiofunc()
       }
     }
   }, 1000);
@@ -392,26 +402,25 @@ function loopReps() {
   workoutSingle.value.exercises.forEach((element: any) => {
     total += element.sets - element.setsDone;
   });
-  if (total == 1) {
+  if (total < 2) {
     exercisesDoneBtn.value = true;
   }
 }
 </script>
 
 <style scoped>
+.done{
+  background-color: rgb(13, 126, 13);
+}
+.started{
+  background-color: rgb(202, 135, 10);
+  color:black;
+}
 label {
   display: grid;
   place-items: center;
 }
-input {
-  border-radius: 5px;
-  padding: 3px;
-  color: black;
-}
-textarea {
-  border-radius: 5px;
-  color: black;
-}
+
 .move-right {
   transform: translateX(40);
 }

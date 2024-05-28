@@ -7,7 +7,7 @@
       >
         <img :src="userStore.user.photoURL" class="rounded" alt="user" />
         <div v-if="workoutsDone">
-          <h2>Workouts done: {{ workoutsDone.length }}</h2>
+          <h2 class="text-center">Workouts done: {{ workoutsDone.length }}</h2>
           <p>
             Total time spent aprox: {{ trainingDone.timeSpentHours }} hours and
             {{ trainingDone.timeSpentMinutes }} minutes
@@ -259,9 +259,11 @@ li {
   background-color: var(--ion-color-tertiary-shade);
 }
 #fullshow li:nth-child(even) {
+  color:wheat;
   background-color: var(--ion-color-secondary-shade);
 }
 .container button:nth-child(odd) .w-full {
+  color:wheat;
   background-color: var(--ion-color-secondary-shade);
 }
 .container button:nth-child(even) .w-full {
