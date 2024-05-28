@@ -44,8 +44,9 @@
     </div>
     <div class="song-list-container grid-1col gap-2">
       <button
-        style="color: black"
+        :class='index == currentIndex ? "song-list-bg-active" : ""'
         class="song-list"
+        :disabled='index == currentIndex ? true : false'
         @click="changeSong(index)"
         v-for="(song, index) of songs"
       >
@@ -67,7 +68,7 @@ import {
 import { fetchDocumentsWhere } from "@/utils/fbFunctions";
 import { genresGlobal } from "@/utils/variables";
 import type { song } from "@/utils/types";
-/* import { Preferences } from "@capacitor/preferences";*/
+import { Preferences } from "@capacitor/preferences";
 import { MediaSession } from "@christoffyw/capacitor-media-session";
 
 const songs = ref([
@@ -132,9 +133,14 @@ function nextSong() {
 }
 
 function prevSong() {
-  if (currentIndex.value === 0) return;
-  currentIndex.value = currentIndex.value - 1;
-  currentSong.value = songs.value[currentIndex.value];
+  if (audio.value.currentTime > 15){
+    audio.value.currentTime = 0;
+    updateTime()
+  }else{
+    if (currentIndex.value === 0) return;
+    currentIndex.value = currentIndex.value - 1;
+    currentSong.value = songs.value[currentIndex.value];
+  }
   updateMediaSessionMetadata();
   updatePositionState()
   if (isPlaying.value) {
@@ -162,6 +168,7 @@ function formatTime(time: any) {
 function changeVolume() {
   if (audio.value) {
     audio.value.volume = volume.value;
+    setVolumeStore()
   }
 }
 
@@ -170,13 +177,10 @@ function updateMediaSessionMetadata() {
     title: currentSong.value.name,
     artist: currentSong.value.artist,
     album: "",
-    artwork: [
-      { src: "../../assets/splash.png", type: "image/png", sizes: "512x512" },
-    ],
   });
-  console.log("updating MediaSession");
 }
 function updatePositionState() {
+  if(!audio.value.currentTime || !audio.value.duration || !audio.value.playbackRate)return
   MediaSession.setPositionState({
     position: audio.value.currentTime,
     duration: audio.value.duration,
@@ -209,8 +213,7 @@ function setupMediaSessionControls() {
     prevSong()
   });
   MediaSession.setActionHandler({ action: 'stop' }, () => {
-    audio.value.pause();
-    isPlaying.value = false;
+    togglePlay()
 });
 }
 
@@ -274,6 +277,7 @@ onMounted(async () => {
     });
     audio.value.volume = volume.value;
   }
+  getVolumeStore()
   setupMediaSessionControls();
   updateMediaSessionMetadata();
   updateMediaSessionPlaybackState();
@@ -307,8 +311,8 @@ function shuffle(array: any) {
     ];
   }
 }
-/* 
-async function setObject() {
+
+async function setVolumeStore() {
   await Preferences.set({
     key: "audio",
     value: JSON.stringify({
@@ -317,13 +321,13 @@ async function setObject() {
   });
 }
 
-async function getObject() {
+async function getVolumeStore() {
   const ret = await Preferences.get({ key: "audio" });
   const audioObj = JSON.parse(ret.value);
   if (audioObj.audioVol) {
     volume.value = audioObj.audioVol;
   }
-} */
+}
 </script>
 
 <style scoped>
@@ -342,8 +346,11 @@ async function getObject() {
   margin: 0 5px;
   font-size: 1rem;
   background-color: var(--ion-color-tertiary);
-  color: var(--ion-color-secondary-contrast);
+  color: black;
   border-radius: 10px;
+}
+.song-list-bg-active{
+  background-color: var(--ion-color-success) !important;
 }
 .volume-control {
   margin-top: 20px;
@@ -353,4 +360,5 @@ select {
   color: black;
   padding: 5px;
 }
+
 </style>

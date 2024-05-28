@@ -23,20 +23,20 @@
             ><ion-icon :icon="arrowDownOutline"></ion-icon
           ></ion-button>
         </div>
-        <section class="flex items-center-flex" style="width: 100% !important">
+        <section class="flex items-center-flex color-black" style="width: 100% !important;">
           <div class="container grid border rounded mx-4">
             <button
-              class="flex items-center-flex"
+              class="flex items-center-flex color-black"
               v-for="(workout, index) of workoutsDone"
               @click="changeFocus(workout)"
             >
               <span
-                class="bg-secondary min-h-full grid grid-center"
+                class="bg-secondary min-h-full grid grid-center color-black"
                 style="width: 6ch"
               >
                 {{ index + 1 }}
               </span>
-              <div class="w-full text-center py-4">
+              <div class="w-full text-center py-4 color-black">
                 {{ workout.day }}<br />{{
                   formatDateShort(workout.date.toDate())
                 }}
@@ -224,6 +224,9 @@ function aproxTimeAtGym() {
 }
 </script>
 <style scoped>
+.color-black{
+  color: black;
+}
 ion-datetime {
   --background: rgb(245, 235, 247);
   --background-rgb: 245, 235, 247;

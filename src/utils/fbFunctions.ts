@@ -1,3 +1,13 @@
+/* import { initializeApp } from "firebase/app";
+import { getFirestore} from "firebase/firestore";
+import { getAuth } from "firebase/auth";
+import { getStorage } from "firebase/storage";
+
+export const app = initializeApp(firebaseConfig);
+export const db = getFirestore();
+export const auth = getAuth();
+export const storage = getStorage(); */
+//above coming from file with config that is hidden
 import { db } from "./firebase";
 import {
   doc,
