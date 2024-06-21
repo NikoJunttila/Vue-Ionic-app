@@ -37,9 +37,9 @@
             <ion-button color="tertiary" @click="login">Signin</ion-button
             ><ion-button color="warning" @click="register">Create</ion-button>
           </div>
-<!--           <ion-button @click="loginGoogle" expand="full" color="danger"
+          <ion-button @click="loginGoogle" expand="full" color="danger"
             ><ion-icon :icon="logoGoogle"></ion-icon
-          ></ion-button> -->
+          ></ion-button>
         </ion-list>
       </div>
       <div v-else>
@@ -87,24 +87,20 @@ async function register() {
       text.value,
       pass.value
     );
-    const userDoc = await getDocument("users", text.value.toLowerCase());
-    if (userDoc) {
-      emit("someEvent");
-      presentToast("Welcome!");
-      return;
-    }
     const user = data.user;
+    console.log(user)
     const emailLower = text.value.toLowerCase();
+    console.log(`${emailLower} emaillower`)
     const userObj = {
       accountType: "normie",
-      displayName: emailLower,
-      displayName_lower: emailLower,
+      displayName: "gamer",
+      displayName_lower: "gamer",
       email: text.value,
       email_lower: emailLower,
       photoURL:
         "https://firebasestorage.googleapis.com/v0/b/portfolio-5756d.appspot.com/o/uploads%2F1679212379254_1367902251612x612.jpg?alt=media&token=d8828d33-d1ad-45aa-bbf7-2063923e7f6c",
     };
-    const response = await createDocument("user", emailLower, userObj);
+    await createDocument("users", emailLower, userObj);
     emit("someEvent");
     presentToast("Welcome!");
   } catch (e) {
@@ -124,9 +120,20 @@ const props = defineProps({
   isOpen: Boolean,
   isLoggedIn: Boolean,
 });
-/* const signInWithGoogle = async () => {
-  const result = await FirebaseAuthentication.signInWithGoogle();
-  return result.user;
+const signInWithGoogle = async () => {
+  const provider = new GoogleAuthProvider();
+  signInWithPopup(auth,provider)
+  .then((result) => {
+    // This gives you a Google Access Token. You can use it to access the Google API.
+    const credential = GoogleAuthProvider.credentialFromResult(result);
+    const token = credential.accessToken;
+    // The signed-in user info.
+    const user = result.user;
+    return result.user;
+}).catch((e)=>{
+console.log(e)
+})
+  
 };
 async function loginGoogle() {
   try {
@@ -137,7 +144,7 @@ async function loginGoogle() {
   } catch (err) {
     presentToast(`${err}`);
   }
-} */
+}
 
 async function checkAndCreateUserDocument(user: any) {
   //@ts-ignore
@@ -150,7 +157,7 @@ async function checkAndCreateUserDocument(user: any) {
       email_lower: user.email.toLowerCase(),
       photoURL: user.photoURL,
     };
-    await createDocument("user", user.email.toLowerCase(), userObj);
+    await createDocument("users", user.email.toLowerCase(), userObj);
   }
   return
 }

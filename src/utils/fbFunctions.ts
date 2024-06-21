@@ -112,10 +112,10 @@ export async function updateWorkouts(workout: any, emailLower: string) {
   try {
     const batch = writeBatch(db);
 
-    const ref1 = doc(db, "users", emailLower, "addedWorkouts", workout.id);
+    const ref1 = doc(db, "users", emailLower, "addedWorkouts", `${workout.id}`);
     batch.set(ref1, workout);
 
-    const ref2 = doc(db, "workoutsPersonal", workout.id);
+    const ref2 = doc(db, "workoutsPersonal", `${workout.id}`);
     batch.set(ref2, workout);
 
     await batch.commit();

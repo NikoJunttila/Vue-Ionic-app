@@ -305,7 +305,7 @@ async function saveTofirebase() {
     workoutSingle.value
   );
   // @ts-ignore
-  if(workoutSingle.value.madeBy && workoutSingle.value.madeBy === userStore.user.email_lower){
+  if(workoutSingle.value.madeBy === userStore.user.email_lower){
     let updateExercises : SingleWorkout = workoutSingle.value
     updateExercises.exercises = updateExercises.exercises.map((exercise : any) => ({
          ...exercise,
@@ -313,7 +313,7 @@ async function saveTofirebase() {
          setsDone: 0
         }));
         // @ts-ignore
-        const toUpdate : any = await getDocument("workoutsPersonal",updateExercises.parentID)
+        const toUpdate : any = await getDocument("workoutsPersonal",`${updateExercises.parentID}`)
         const updatedObject : any = {
             ...toUpdate,
             plans: [
@@ -324,7 +324,7 @@ async function saveTofirebase() {
               ...toUpdate.plans.slice(updateExercises.index + 1) // Copy the plans after the desired index
             ]
           };
-    const idk = await updateWorkouts(updatedObject, userStore.user.email_lower)
+    await updateWorkouts(updatedObject, userStore.user.email_lower)
   }
   presentToast("Workout saved!")
   reset();

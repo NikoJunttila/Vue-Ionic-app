@@ -95,7 +95,7 @@
 </template>
 
 <script setup lang="ts">
-import { getDocument, getCollection } from "../utils/fbFunctions";
+import { getCollection } from "../utils/fbFunctions";
 import {
   IonPage,
   IonContent,
@@ -139,6 +139,7 @@ function startWorkout(plan: any, index: number) {
   isOpen.value = !isOpen.value;
   plan.parentID = singleWorkout.value.id;
   plan.index = index;
+  plan.madeBy = singleWorkout.value.madeBy
   const save = JSON.stringify(plan);
   localStorage.setItem("workout", save);
   localStorage.setItem("initWorkout", save);
