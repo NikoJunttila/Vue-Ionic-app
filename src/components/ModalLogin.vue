@@ -12,9 +12,7 @@
     </ion-header>
     <ion-content class="ion-padding" color="primary">
       <div v-if="!isLoggedIn">
-        <p>
-          login/sign in.
-        </p>
+        <p>login/sign in.</p>
         <ion-list>
           <ion-item>
             <ion-input
@@ -88,9 +86,9 @@ async function register() {
       pass.value
     );
     const user = data.user;
-    console.log(user)
+    console.log(user);
     const emailLower = text.value.toLowerCase();
-    console.log(`${emailLower} emaillower`)
+    console.log(`${emailLower} emaillower`);
     const userObj = {
       accountType: "normie",
       displayName: "gamer",
@@ -122,22 +120,22 @@ const props = defineProps({
 });
 const signInWithGoogle = async () => {
   const provider = new GoogleAuthProvider();
-  signInWithPopup(auth,provider)
-  .then((result) => {
-    // This gives you a Google Access Token. You can use it to access the Google API.
-    const credential = GoogleAuthProvider.credentialFromResult(result);
-    const token = credential.accessToken;
-    // The signed-in user info.
-    const user = result.user;
-    return result.user;
-}).catch((e)=>{
-console.log(e)
-})
-  
+  signInWithPopup(auth, provider)
+    .then((result) => {
+      // This gives you a Google Access Token. You can use it to access the Google API.
+      const credential = GoogleAuthProvider.credentialFromResult(result);
+      const token = credential.accessToken;
+      // The signed-in user info.
+      const user = result.user;
+      return result.user;
+    })
+    .catch((e) => {
+      console.log(e);
+    });
 };
 async function loginGoogle() {
   try {
-    const user = await signInWithGoogle()
+    const user = await signInWithGoogle();
     checkAndCreateUserDocument(user);
     emit("someEvent");
     presentToast("Signed in");
@@ -159,6 +157,6 @@ async function checkAndCreateUserDocument(user: any) {
     };
     await createDocument("users", user.email.toLowerCase(), userObj);
   }
-  return
+  return;
 }
 </script>

@@ -1,1 +1,1 @@
-export const genresGlobal = ["Bängers", "Rock", "Hardstyle","Weeb","J-pop","Senkku"];
+export const genresGlobal = ["Eminem","NF","Bängers", "Rock", "Hardstyle","Weeb","J-pop","Senkku"];
